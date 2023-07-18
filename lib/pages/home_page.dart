@@ -104,7 +104,7 @@ class _HomePageState extends State<HomePage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Text(
-              "Shopping Categories",
+              "Shopping Categories - Computer icons created by Freepik - Flaticon",
               style: GoogleFonts.notoSerif(
                 //fontWeight: FontWeight.bold,
                 fontSize: 18,
