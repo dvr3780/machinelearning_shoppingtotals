@@ -4,7 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-
+import 'package:provider/provider.dart';
+import '../model/cart_model.dart';
 
 class GroceryItemTile extends StatelessWidget {
   final String itemName;
@@ -14,7 +15,7 @@ class GroceryItemTile extends StatelessWidget {
   bool textScanning = false;
   XFile? imageFile;
   String scannedText = "";
-  String scannedPrice = "";
+  String scannedPrice = "0";
   final currencyFormat = NumberFormat("#,##0.00", "en_US");
 
  
@@ -31,6 +32,7 @@ class GroceryItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final providerCartModel = Provider.of<CartModel>(context);
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Container(
@@ -72,7 +74,7 @@ class GroceryItemTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0)),
                 ),
                 onPressed: () {
-                  getImage(ImageSource.camera);
+                  getImage(providerCartModel, ImageSource.camera);
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(
@@ -94,7 +96,7 @@ class GroceryItemTile extends StatelessWidget {
                 ),
             )),
 
-            MaterialButton(
+            /*MaterialButton(
               onPressed: onPressed,
               color: color,
               child: Text(
@@ -104,14 +106,14 @@ class GroceryItemTile extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            )
+            )*/
           ],
         ),
       ),
     );
   }
 
- void getImage(ImageSource source) async {
+ void getImage(var providerCartModel, ImageSource source) async {
     try {
       final pickedImage = await ImagePicker().pickImage(source: source);
       if (pickedImage != null) {
@@ -119,7 +121,7 @@ class GroceryItemTile extends StatelessWidget {
         imageFile = pickedImage;
         final imageTemp = XFile(pickedImage.path);
         //setState(() => imageFile = imageTemp);
-        getRecognisedText(imageTemp);//pickedImage);
+        getRecognisedText(providerCartModel, imageTemp);//pickedImage);
         //log(imageTemp.path);
       }
     } catch (e) {
@@ -130,7 +132,7 @@ class GroceryItemTile extends StatelessWidget {
     }
   }
 
-  void getRecognisedText(XFile image) async {
+  void getRecognisedText(var providerCartModel, XFile image) async {
     final inputImage = InputImage.fromFilePath(image.path);
     final textDetector = GoogleMlKit.vision.textRecognizer();
     RecognizedText recognisedText = await textDetector.processImage(inputImage);
@@ -148,8 +150,10 @@ class GroceryItemTile extends StatelessWidget {
       var price =  priceString.elementAt(0)!.replaceAll(RegExp(r'/(?:[$])\s*\d+(?:\.\d{2})?/'),'');
       var valPrice = price.replaceAll('\$', '');
       var p = double.parse(valPrice);
-      this.itemPrice = valPrice;
-      this.scannedPrice = valPrice;
+      itemPrice = valPrice;
+      scannedPrice = valPrice;
+      var index = (itemName == "Groceries") ? 0: 1; 
+      providerCartModel.addItemToCart(index, scannedPrice);
       //productPrices.add(p);
       //total = total + p; 
     }

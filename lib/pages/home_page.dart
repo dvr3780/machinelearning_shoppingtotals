@@ -1,4 +1,5 @@
-import 'dart:collection';
+//import 'dart:collection';
+//import 'dart:js_interop';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -130,12 +131,19 @@ class _HomePageState extends State<HomePage> {
                       itemPrice: value.shopItems[index][1],
                       imagePath: value.shopItems[index][2],
                       color: value.shopItems[index][3],
-                      onPressed: ()=>{},
+                      onPressed: (){
+                        
+                      },
                     ));
-                    g[index].onPressed =() =>{
-                        Provider.of<CartModel>(context, listen: false).addItemToCart(index, g[index].scannedPrice)
-                        //g.ItemPrice = g.scannedPrice;
+                    g[index].onPressed =() {
+                        if(g[index].scannedPrice != "0"){
+                          setState(() => { g[index].itemPrice = g[index].scannedPrice });
+                          //g[index].itemPrice = g[index].scannedPrice;
+                          Provider.of<CartModel>(context, listen: false).addItemToCart(index, g[index].scannedPrice);
+                          //g.ItemPrice = g.scannedPrice;
+                        }
                     };
+  
                     return g[index];
                   },
                 );
